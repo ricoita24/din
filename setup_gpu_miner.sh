@@ -86,10 +86,15 @@ echo "===> You are now in the gpu-miner directory."
 echo "===> Empty .env file created."
 echo "===> Ready to use the GPU miner."
 echo ""
-# Create and attach to a screen session
-echo "===> Creating and attaching to screen session 'gpu-miner'..."
-screen -dmS gpu-miner
-screen -r gpu-miner
+# Check if screen session exists, if not create it
+if ! screen -list | grep -q "gpu-miner"; then
+  echo "===> Creating and attaching to screen session 'gpu-miner'..."
+  screen -dmS gpu-miner
+  screen -r gpu-miner
+else
+  echo "===> Attaching to existing screen session 'gpu-miner'..."
+  screen -r gpu-miner
+fi
 EOF
 chmod +x finish_setup.sh
 
