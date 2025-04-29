@@ -7,7 +7,7 @@ apt-get install -y dos2unix && dos2unix setup_gpu_miner.sh && chmod +x setup_gpu
 
 echo "===> Updating and installing basic dependencies..."
 apt-get update
-apt-get install -y sudo g++ make git nano curl clinfo dos2unix
+apt-get install -y sudo g++ make git nano curl clinfo dos2unix screen
 
 echo "===> Installing OpenCL libraries..."
 apt-get install -y ocl-icd-opencl-dev libopencl-clang-dev
@@ -86,11 +86,32 @@ echo "===> You are now in the gpu-miner directory."
 echo "===> Empty .env file created."
 echo "===> Ready to use the GPU miner."
 echo ""
+# Create and attach to a screen session
+echo "===> Creating and attaching to screen session 'gpu-miner'..."
+screen -dmS gpu-miner
+screen -r gpu-miner
 EOF
 chmod +x finish_setup.sh
+
+# Create a script to start miner in screen
+cat > /usr/local/bin/start-gpu-miner-screen <<EOF
+#!/bin/bash
+cd gpu-miner
+source myenv/bin/activate
+# Check if screen session exists, if not create it
+if ! screen -list | grep -q "gpu-miner"; then
+  screen -dmS gpu-miner
+fi
+# Attach to the screen session
+screen -r gpu-miner
+EOF
+chmod +x /usr/local/bin/start-gpu-miner-screen
 
 echo "===> Setup complete!"
 echo ""
 echo "===> To complete setup, run this command:"
 echo "     source ./finish_setup.sh"
+echo ""
+echo "===> In the future, you can start the miner in a screen session with:"
+echo "     start-gpu-miner-screen"
 echo ""
